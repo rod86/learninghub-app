@@ -1,7 +1,7 @@
 
 export default function Home() {
     return (
-        <main>
+        <main className="text-2xl">
           hello world
         </main>
     );
