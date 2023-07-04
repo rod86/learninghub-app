@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply text-slate-700;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-thin uppercase text-slate-800 mb-5;
+    }
+
+    h1 {
+        @apply text-6xl;
+    }
+
+    h2 {
+        @apply text-4xl;
+    }
+
+    h3 {
+        @apply text-3xl;
+    }
+
+    h4 {
+        @apply text-2xl;
+    }
+
+    h5 {
+        @apply text-xl;
+    }
+
+    /* forms */
+    input:-webkit-autofill,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+    }
+    .form-label {
+        @apply block text-slate-600 mb-2;
+    }
+    .form-input, .form-select {
+        @apply appearance-none rounded-md border-slate-300 shadow-sm text-slate-600 placeholder:text-slate-400 font-light focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
+    }
+    .form-checkbox, .form-radio {
+        @apply appearance-none h-5 w-5 rounded border-slate-300 shadow-sm cursor-pointer focus:ring focus:ring-indigo-200 focus:ring-opacity-50 checked:bg-indigo-500;
+    }
+    .form-radio {
+        @apply rounded-full;
+    }
+}
+
+@layer components {
+    .container {
+        @apply px-5 lg:px-0;
+    }
+}
+
+/* Content */
+
+h1.section-header,
+h2.section-header,
+h3.section-header,
+h4.section-header,
+h5.section-header,
+h6.section-header {
+    @apply relative;
+}
+
+.section {
+    @apply mb-10;
+}
+
+h1.section-header::after,
+h2.section-header::after,
+h3.section-header::after,
+h4.section-header::after,
+h5.section-header::after,
+h6.section-header::after {
+    content: "";
+    @apply absolute block w-[50px] h-[1px] bg-emerald-600 bottom-0 left-1;
+}
+
+/* Buttons */
+
+.button {
+    @apply inline-block w-full px-4 py-2 bg-emerald-500 border-2 border-emerald-500 text-white text-center font-semibold tracking-wide rounded-md transition-all duration-300 lg:w-auto hover:bg-emerald-400 hover:border-emerald-400;
+}
+
+.button-lg {
+    @apply px-8 py-2.5 text-lg;
+}
+
+.button-sm {
+    @apply px-2 py-1.5 text-sm;
+}
+
+.button-outlined {
+    @apply bg-transparent text-emerald-500 hover:bg-emerald-500 hover:border-emerald-500 hover:text-white;
+}
+
+/* Badges */
+
+.badge {
+    @apply inline-flex items-center rounded-full font-thin text-sm px-2.5 py-1 bg-neutral-100 text-neutral-700;
+}
+.badge.badge-lg {
+    @apply px-3.5 py-1.5 text-base;
+}
+.badge .badge-icon {
+    @apply w-4 h-4 mr-2;
+}
+.badge.badge-lg .badge-icon {
+    @apply w-6 h-6 mr-3;
+}
+.badge.badge-red {
+    @apply bg-red-100 text-red-700;
+}
+.badge.badge-violet {
+    @apply bg-violet-100 text-violet-700;
+}
+.badge.badge-sky {
+    @apply bg-sky-100 text-sky-700;
+}

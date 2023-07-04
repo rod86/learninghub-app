@@ -13,8 +13,16 @@
         "semi": ["error", "always"],
         "no-console": "warn",
         "no-alert": "error",
-        "no-unused-vars": "error",
+        "@typescript-eslint/no-unused-vars": "error",
         "quotes": ["error", "single"],
         "prefer-template": "error"
-    }
+    },
+    "overrides": [
+        {
+            "files": ["./*.js"],
+            "rules": {
+                "@typescript-eslint/no-var-requires": "off"
+            }
+        }
+    ]
 }
