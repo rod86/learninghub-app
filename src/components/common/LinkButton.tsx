@@ -1,15 +1,15 @@
+import { PropsWithChildren} from 'react';
 import Link from 'next/link';
 import classNames from 'classnames';
 
 type ButtonSize = 'sm' | 'normal' | 'lg';
-interface ButtonProps {
-    text: string;
+interface LinkButtonProps {
     url: string;
     outlined?: boolean;
     size?: ButtonSize;
 }
 
-const Button = ({ text, url, size = 'normal', outlined = false }: ButtonProps) => {
+const LinkButton = ({ children, url, size = 'normal', outlined = false }: PropsWithChildren<LinkButtonProps>) => {
     const btnClass = classNames('button', {
         'button-outlined': outlined,
         [`button-${size}`]: size !== 'normal',
@@ -19,9 +19,9 @@ const Button = ({ text, url, size = 'normal', outlined = false }: ButtonProps) =
         <Link
             href={url}
             className={btnClass}>
-            {text}
+            {children}
         </Link>
     );
 };
 
-export default Button;
+export default LinkButton;

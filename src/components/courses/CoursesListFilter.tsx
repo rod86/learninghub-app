@@ -1,27 +1,22 @@
-import {tags} from '@lib/data';
 import {ChangeEvent} from 'react';
 import TextField from '@components/common/Form/TextField';
-import SelectField from '@components/common/Form/SelectField';
+import SelectField, {SelectFieldOption} from '@components/common/Form/SelectField';
 import CheckboxFieldGroup from '@components/common/Form/CheckboxFieldGroup';
+import Field from '@components/common/Form/Field';
 import Button from '@components/common/Form/Button';
 import {GoX} from 'react-icons/go';
+import {CoursesFilterValues} from '@lib/fakeApi';
 
-export interface CoursesFilterValues {
-    search: string|null;
-    category: string|null;
-    format: string[];
-    duration: string[];
-    level: string[];
-}
 
 interface CoursesListFilterProps {
     filterValues: CoursesFilterValues;
     className?: string;
     onChange: (filterValues: CoursesFilterValues) => void;
     onClear: () => void;
+    tagsOptions: SelectFieldOption[]
 }
 
-const CoursesListFilter = ({ filterValues, className, onChange, onClear }: CoursesListFilterProps) => {
+const CoursesListFilter = ({ filterValues, className, tagsOptions, onChange, onClear }: CoursesListFilterProps) => {
     const onChangeFilter = (e: ChangeEvent<HTMLInputElement|HTMLSelectElement>): void => {
         const { name, value } = e.target;
         onChange({
@@ -30,31 +25,12 @@ const CoursesListFilter = ({ filterValues, className, onChange, onClear }: Cours
         });
     };
 
-    const onChangeCheckboxGroup = (name: string, checkedValues: string[]): (e: ChangeEvent<HTMLInputElement>) => void => {
-        return (e: ChangeEvent<HTMLInputElement>): void => {
-            const { checked, value } = e.target;
-
-            if (checked) {
-                onChange({
-                    ...filterValues,
-                    [name]: [...checkedValues, value]
-                });
-            } else {
-                onChange({
-                    ...filterValues,
-                    [name]: checkedValues.filter(item => item !== value)
-                });
-            }
-        };
+    const onChangeCheckboxGroup = (name: string, checkedValues: string[]): void => {
+        onChange({
+            ...filterValues,
+            [name]: checkedValues
+        });
     };
-
-    const tagsList = [
-        { value: '', label: '-'},
-        ...tags.map(({id, name}) => ({
-            label: name,
-            value: id
-        }))
-    ];
 
     return (
         <div className={className}>
@@ -67,24 +43,21 @@ const CoursesListFilter = ({ filterValues, className, onChange, onClear }: Cours
                     <GoX className="text-xl mr-1" /> Clear All
                 </Button>
             </div>
-
-            <div className="w-full mb-5">
+            <Field>
                 <TextField
                     name="search"
                     placeholder="Search"
                     value={filterValues.search}
                     onChange={onChangeFilter} />
-            </div>
-            <div className="w-full mb-5">
-                <label htmlFor="category" className="form-label">Category</label>
+            </Field>
+            <Field label="Category" htmlFor="category">
                 <SelectField
-                    name="category"
-                    options={tagsList}
-                    value={filterValues.category}
+                    name="tag"
+                    options={[{ value: '', label: '-'}, ...tagsOptions]}
+                    value={filterValues.tag}
                     onChange={onChangeFilter} />
-            </div>
-            <div className="w-full mb-5">
-                <div className="form-label">Format</div>
+            </Field>
+            <Field label="Format" asDiv>
                 <CheckboxFieldGroup
                     name="format"
                     options={[
@@ -93,12 +66,9 @@ const CoursesListFilter = ({ filterValues, className, onChange, onClear }: Cours
                         {value: 'pdf', label: 'Pdf'},
                     ]}
                     checkedValues={filterValues.format}
-                    onChange={onChangeCheckboxGroup('format', filterValues.format)} />
-            </div>
-            <div className="w-full mb-5">
-                <label htmlFor="duration" className="form-label">
-                    Duration
-                </label>
+                    onChange={onChangeCheckboxGroup} />
+            </Field>
+            <Field label="Duration" asDiv>
                 <CheckboxFieldGroup
                     name="duration"
                     options={[
@@ -108,10 +78,9 @@ const CoursesListFilter = ({ filterValues, className, onChange, onClear }: Cours
                         {value:'6_hours_or_more', label: '6 hours or more'},
                     ]}
                     checkedValues={filterValues.duration}
-                    onChange={onChangeCheckboxGroup('duration', filterValues.duration)} />
-            </div>
-            <div className="w-full mb-5">
-                <div className="form-label">Level</div>
+                    onChange={onChangeCheckboxGroup} />
+            </Field>
+            <Field label="Level" asDiv>
                 <CheckboxFieldGroup
                     name="level"
                     options={[
@@ -120,8 +89,8 @@ const CoursesListFilter = ({ filterValues, className, onChange, onClear }: Cours
                         {value: 'advanced', label: 'Advanced'},
                     ]}
                     checkedValues={filterValues.level}
-                    onChange={onChangeCheckboxGroup('level', filterValues.level)} />
-            </div>
+                    onChange={onChangeCheckboxGroup} />
+            </Field>
         </div>
     );
 };

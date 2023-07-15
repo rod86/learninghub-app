@@ -1,73 +1,64 @@
 import {Course} from '@lib/models/Course';
-import {courses as coursesData} from '@lib/data';
 import CoursesList from '@components/courses/CoursesList';
-import CoursesListFilter, {CoursesFilterValues} from '@components/courses/CoursesListFilter';
-import {useEffect, useState} from 'react';
+import CoursesListFilter from '@components/courses/CoursesListFilter';
+import {useState, useEffect, useRef} from 'react';
 import Spinner from '@components/common/Spinner';
-import {useRouter} from 'next/router';
 import Button from '@components/common/Form/Button';
 import {GoFilter} from 'react-icons/go';
 import classNames from 'classnames';
+import {GetStaticProps} from 'next';
+import {CoursesFilterValues, fetchCourses, fetchTags} from '@lib/fakeApi';
+import {SelectFieldOption} from '@components/common/Form/SelectField';
 
 const initialFilterValues = {
     search: null,
-    category: null,
+    tag: null,
     format: [],
     duration: [],
     level: []
 };
 
-const applyFilters = (filters: CoursesFilterValues): Course[] => {
-    let filteredCourses = coursesData;
-    const { search, format, category } = filters;
+interface CoursesPageProps {
+    courses: Course[];
+    tagsOptions: SelectFieldOption[];
+}
 
-    if (search !== null) {
-        filteredCourses = filteredCourses.filter(item => {
-            return item.title.toLowerCase().includes(search.toLowerCase());
-        });
-    }
+export const getStaticProps: GetStaticProps<CoursesPageProps> = async () => {
+    const courses = await fetchCourses();
+    const tagsOptions = (await fetchTags()).map(elem => ({value: elem.id, label: elem.name}));
 
-    if (category) {
-        filteredCourses = filteredCourses.filter(item => item.tags[0].id === category);
-    }
-
-    if (format.length) {
-        filteredCourses = filteredCourses.filter(item => format.includes(item.format));
-    }
-
-    return filteredCourses;
+    return { props: {
+        courses,
+        tagsOptions
+    }};
 };
 
-const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time));
-
-export default function CoursesPage() {
-    const { query } = useRouter();
-    const category = query.category as string;
-
+const CoursesPage = ({ courses, tagsOptions }: CoursesPageProps) => {
+    const initialRender = useRef(true);
+    const [filteredCourses, setFilteredCourses] = useState<Course[]>(courses);
     const [filterValues, setFilterValues] = useState<CoursesFilterValues>(initialFilterValues);
-    const [courses, setCourses] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showFilters, setShowFilters] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (!category) return;
-        setFilterValues({...filterValues, category });
-    }, [category]);
+    const onChangeFilter = (values: CoursesFilterValues): void => {
+        initialRender.current = false;
+        setFilterValues(values);
+    };
 
     useEffect(() => {
-        const fetchCourses = setTimeout(() => {
+        if (initialRender.current) {
+            return;
+        }
+
+        const loadCourses = setTimeout(() => {
             setIsLoading(true);
-            delay(2000).then(()=>{
-                setCourses(applyFilters(filterValues));
-                setIsLoading(false);
-            });
+            fetchCourses(filterValues)
+                .then(result => setFilteredCourses(result))
+                .finally(() => setIsLoading(false));
         }, 500);
 
-        return () => clearTimeout(fetchCourses);
+        return () => clearTimeout(loadCourses);
     }, [filterValues]);
-
-    const onChangeFilter = (values: CoursesFilterValues): void => setFilterValues(values);
-    const onClearFilters = () => setFilterValues(initialFilterValues);
 
     return (
         <>
@@ -83,16 +74,22 @@ export default function CoursesPage() {
                         Show/Hide Search Filters
                     </Button>
                     <CoursesListFilter
-                        className={classNames('lg:block', { 'hidden': showFilters })}
+                        className={classNames('lg:block', { 'hidden': !showFilters })}
+                        tagsOptions={tagsOptions}
                         filterValues={filterValues}
                         onChange={onChangeFilter}
-                        onClear={onClearFilters} />
+                        onClear={() => onChangeFilter(initialFilterValues)} />
                 </div>
                 <div className="w-full lg:pl-5">
                     {isLoading && <Spinner />}
-                    {(!isLoading && courses) && <CoursesList courses={courses} />}
+                    {(!isLoading && !filteredCourses.length ) && (
+                        <div className="w-full text-center text-4xl text-slate-400 font-thin">No results found</div>
+                    )}
+                    {(!isLoading && filteredCourses) && <CoursesList courses={filteredCourses} />}
                 </div>
             </section>
         </>
     );
-}
+};
+
+export default CoursesPage;

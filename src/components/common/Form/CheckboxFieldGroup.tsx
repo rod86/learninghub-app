@@ -11,10 +11,20 @@ interface CheckboxFieldGroupProps {
     options: CheckboxFieldGroupItem[];
 
     checkedValues?: string[]
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    onChange: (name: string, checkedValues: string[]) => void;
 }
 
 const CheckboxFieldGroup = ({name, options, onChange, checkedValues = []}: CheckboxFieldGroupProps) => {
+    const onChangeCheckbox = (e: ChangeEvent<HTMLInputElement>): void => {
+        const { checked, value } = e.target;
+
+        if (checked) {
+            onChange(name, [...checkedValues, value]);
+        } else {
+            onChange(name, checkedValues.filter(item => item !== value));
+        }
+    };
+
     return (
         <div className="flex-row space-y-2.5">
             {options.map(({label, value}) => {
@@ -24,7 +34,7 @@ const CheckboxFieldGroup = ({name, options, onChange, checkedValues = []}: Check
                             name={name}
                             value={value}
                             checked={checkedValues && checkedValues.includes(value)}
-                            onChange={onChange} />
+                            onChange={onChangeCheckbox} />
                         <label htmlFor={value} className="form-label mb-0 font-light">{label}</label>
                     </div>
                 );

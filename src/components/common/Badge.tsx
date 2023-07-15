@@ -7,11 +7,12 @@ interface BadgeProps {
     color?: string;
     Icon?: React.ElementType|null;
     isLarge?: boolean;
+    className?: string|null;
 }
 
-const Badge = ({text, color = '', Icon = null, isLarge = false}: BadgeProps) => {
+const Badge = ({text, color = '', Icon = null, isLarge = false, className = null}: BadgeProps) => {
     const styles = classNames(
-        `badge badge-${color}`,
+        `badge badge-${color} ${className}`,
         {
             'badge-lg': isLarge
         }

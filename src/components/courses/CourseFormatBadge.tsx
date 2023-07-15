@@ -28,13 +28,19 @@ const FORMATS: CourseFormatInfo = {
 interface CourseFormatBadgeProps {
     format: CourseFormat;
     isLarge?: boolean
+    className?: string|null
 }
 
-const CourseFormatBadge = ({ format, isLarge = false }: CourseFormatBadgeProps) => {
+const CourseFormatBadge = ({ format, isLarge = false, className = null }: CourseFormatBadgeProps) => {
     const { label, color, icon } = FORMATS[format];
 
     return (
-        <Badge text={label} color={color} isLarge={isLarge} Icon={icon} />
+        <Badge
+            text={label}
+            color={color}
+            isLarge={isLarge}
+            Icon={icon}
+            className={className} />
     );
 };
 

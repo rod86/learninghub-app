@@ -1,6 +1,6 @@
 import {ChangeEvent} from 'react';
 
-type SelectFieldOption = {
+export type SelectFieldOption = {
     label: string|number;
     value: string|number;
 };

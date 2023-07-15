@@ -2,13 +2,19 @@ import {Course} from './models/Course';
 import {Tag} from './models/Tag';
 
 const tags: Tag[] = [
-    {id: '1', name: 'Marketing & SEO', slug: 'marketing-seo'},
-    {id: '2', name: 'Backend', slug: 'backend'},
-    {id: '3', name: 'Frontend', slug: 'frontend'},
-    {id: '4', name: 'devops', slug: 'devops'},
-    {id: '5', name: 'Testing', slug: 'testing'},
-    {id: '6', name: 'Software Architecture', slug: 'software-architecture'},
-    {id: '7', name: 'Mobile App Develepment', slug: 'mobile-app-development'},
+    {id: 1, name: 'Marketing & SEO', slug: 'marketing-seo'},
+    {id: 2, name: 'Backend', slug: 'backend'},
+    {id: 3, name: 'Frontend', slug: 'frontend'},
+    {id: 4, name: 'Devops', slug: 'devops'},
+    {id: 5, name: 'Testing', slug: 'testing'},
+    {id: 6, name: 'Software Architecture', slug: 'software-architecture'},
+    {id: 7, name: 'Mobile App Develepment', slug: 'mobile-app-development'},
+    {id: 8, name: 'Personal Development', slug: 'mobile-app-development'},
+
+    {id: 9, name: 'React', slug: 'react'},
+    {id: 10, name: 'NodeJS', slug: 'node'},
+    {id: 11, name: 'PHP', slug: 'php'},
+    {id: 12, name: 'Symfony', slug: 'symfony'},
 ];
 
 const courses: Course[] = [
@@ -16,7 +22,7 @@ const courses: Course[] = [
         id: '1',
         title: 'Build a chat with React and Socket.io',
         slug: 'build-a-chat-with-react-and-socket-io',
-        tags: [tags[2]],
+        tags: [tags[2], tags[8], tags[9]],
         format: 'video',
         level: 'beginner',
         duration: 50,
@@ -66,7 +72,7 @@ const courses: Course[] = [
         id: '6',
         title: 'Domain Driven Design with Symfony 6',
         slug: 'domain-driven-design-with-symfony-6',
-        tags: [tags[5]],
+        tags: [tags[5], tags[11]],
         format: 'video',
         level: 'advanced',
         duration: 450,
