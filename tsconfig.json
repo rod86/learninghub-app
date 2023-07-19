@@ -19,6 +19,7 @@
             "@components/*": ["./src/components/*"],
             "@assets/*": ["./src/assets/*"],
             "@lib/*": ["./src/lib/*"],
+            "@modules/*": ["./src/modules/*"],
             "@config/*": ["./src/config/*"]
         }
     },
