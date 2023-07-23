@@ -1,4 +1,3 @@
-import {Course} from '@lib/models/Course';
 import CoursesList from '@components/courses/CoursesList';
 import CoursesListFilter from '@components/courses/CoursesListFilter';
 import {useState, useEffect, useRef} from 'react';
@@ -7,8 +6,18 @@ import Button from '@components/common/Form/Button';
 import {GoFilter} from 'react-icons/go';
 import classNames from 'classnames';
 import {GetStaticProps} from 'next';
-import {CoursesFilterValues, fetchCourses, fetchTags} from '@lib/fakeApi';
 import {SelectFieldOption} from '@components/common/Form/SelectField';
+import GetCoursesUseCase from '@modules/courses/application/GetCoursesUseCase';
+import Course from '@modules/courses/domain/models/Course';
+import GetTagsUseCase from '@modules/courses/application/GetTagsUseCase';
+
+interface CoursesFilterValues {
+    search: string|null;
+    tag: number|null;
+    format: string[];
+    duration: string[];
+    level: string[];
+}
 
 const initialFilterValues = {
     search: null,
@@ -24,8 +33,12 @@ interface CoursesPageProps {
 }
 
 export const getStaticProps: GetStaticProps<CoursesPageProps> = async () => {
-    const courses = await fetchCourses();
-    const tagsOptions = (await fetchTags()).map(elem => ({value: elem.id, label: elem.name}));
+    const useCase = new GetCoursesUseCase();
+    const { courses } = await useCase.handle();
+
+    const tagUseCase = new GetTagsUseCase();
+    const { tags } = await tagUseCase.handle();
+    const tagsOptions = tags.map(elem => ({value: elem.id, label: elem.name}));
 
     return { props: {
         courses,
@@ -52,8 +65,10 @@ const CoursesPage = ({ courses, tagsOptions }: CoursesPageProps) => {
 
         const loadCourses = setTimeout(() => {
             setIsLoading(true);
-            fetchCourses(filterValues)
-                .then(result => setFilteredCourses(result))
+            const useCase = new GetCoursesUseCase();
+            useCase.handle()
+                .then(({ courses }) => setFilteredCourses(courses))
+                //.catch() do something with error
                 .finally(() => setIsLoading(false));
         }, 500);
 

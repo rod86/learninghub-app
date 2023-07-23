@@ -5,8 +5,15 @@ import CheckboxFieldGroup from '@components/common/Form/CheckboxFieldGroup';
 import Field from '@components/common/Form/Field';
 import Button from '@components/common/Form/Button';
 import {GoX} from 'react-icons/go';
-import {CoursesFilterValues} from '@lib/fakeApi';
 
+// TODO move to domain
+export interface CoursesFilterValues {
+    search: string|null;
+    tag: number|null;
+    format: string[];
+    duration: string[];
+    level: string[];
+}
 
 interface CoursesListFilterProps {
     filterValues: CoursesFilterValues;

@@ -1,4 +1,4 @@
-import { Tag } from '@lib/models/Tag';
+import Tag from '@modules/courses/domain/models/Tag';
 import TagListItem from '@components/tags/TagListItem';
 
 interface TagListProps {

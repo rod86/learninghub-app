@@ -1,4 +1,4 @@
-import { Course } from '@lib/models/Course';
+import Course from '@modules/courses/domain/models/Course';
 import CourseListItem from '@components/courses/CourseListItem';
 
 interface CoursesListProps {

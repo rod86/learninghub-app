@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Course } from '@lib/models/Course';
+import Course from '@modules/courses/domain/models/Course';
 import LinkButton from '@components/common/LinkButton';
 import CourseFormatBadge from '@components/courses/CourseFormatBadge';
 import {GoCalendar, GoClock} from 'react-icons/go';
@@ -27,7 +27,7 @@ const CoursesListItem = ({ course }: CoursesListItemProps) => {
                 </div>
                 <div className="flex items-center flex-1">
                     <GoClock className="w-4 h-4 mr-2" />
-                    <TimeDuration duration={course.duration} />
+                    <TimeDuration duration={course.durationMinutes} />
                 </div>
                 <div className="flex items-center flex-1">
                     <FaStairs className="w-4 h-4 mr-2" />

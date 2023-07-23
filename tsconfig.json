@@ -18,11 +18,10 @@
             "@styles/*": ["./src/styles/*"],
             "@components/*": ["./src/components/*"],
             "@assets/*": ["./src/assets/*"],
-            "@lib/*": ["./src/lib/*"],
             "@modules/*": ["./src/modules/*"],
             "@config/*": ["./src/config/*"]
         }
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    "include": ["next-env.d.ts", "environment.d.ts", "**/*.ts", "**/*.tsx"],
     "exclude": ["node_modules"]
 }

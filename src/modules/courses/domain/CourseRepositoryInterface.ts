@@ -1,8 +1,9 @@
-import {Course} from '@modules/courses/domain/models/Course';
+import Course from '@modules/courses/domain/models/Course';
 
 interface CourseRepositoryInterface {
-    fetchCourses: () => Course[];
-    fetchCourseBySlug: (slug: string) => Course; // throws excpetion if no result
+    getAllCourses(): Promise<Course[]>;
+
+    findCourseBySlug(slug: string): Promise<Course|null>;
 }
 
 export default CourseRepositoryInterface;

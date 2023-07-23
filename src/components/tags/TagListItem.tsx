@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Tag } from '@lib/models/Tag';
+import Tag from '@modules/courses/domain/models/Tag';
 
 interface TagListItemProps {
     tag: Tag
