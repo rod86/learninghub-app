@@ -7,6 +7,7 @@ import GetCoursesUseCase from '@modules/courses/application/GetCoursesUseCase';
 import Course from '@modules/courses/domain/models/Course';
 import GetTagsUseCase from '@modules/courses/application/GetTagsUseCase';
 import Tag from '@modules/courses/domain/models/Tag';
+import {container} from 'tsyringe';
 
 interface HomePageProps {
     tags: Tag[];
@@ -14,12 +15,12 @@ interface HomePageProps {
 }
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
-    const coursesUseCase = new GetCoursesUseCase();
-    const { courses } = await coursesUseCase.handle();
+    const getCoursesUseCase = container.resolve(GetCoursesUseCase);
+    const { courses } = await getCoursesUseCase.handle();
     //TODO fetch 5 courses order by publishedAt desc
 
-    const tagUseCase = new GetTagsUseCase();
-    const { tags } = await tagUseCase.handle();
+    const getTagsUseCase = container.resolve(GetTagsUseCase);
+    const { tags } = await getTagsUseCase.handle();
 
     return { props: { tags, latestCourses: courses }};
 };

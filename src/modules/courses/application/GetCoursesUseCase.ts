@@ -1,19 +1,19 @@
 import {UseCase, Response} from '@modules/shared/domain/UseCase';
-import SanityCourseRepository from '@modules/courses/infrastructure/persistence/sanity/SanityCourseRepository';
 import Course from '@modules/courses/domain/models/Course';
-import CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
+import type CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
+import {inject, injectable} from 'tsyringe';
 
 interface GetCoursesUseCaseResponse extends Response {
     courses: Course[];
 }
 
+@injectable()
 class GetCoursesUseCase implements UseCase<void, Promise<GetCoursesUseCaseResponse>> {
 
-    private readonly courseRepository: CourseRepositoryInterface;
+    constructor(
+        @inject('CourseRepositoryInterface') private readonly courseRepository: CourseRepositoryInterface
+    ) {}
 
-    constructor() {
-        this.courseRepository = new SanityCourseRepository();
-    }
     async handle(): Promise<GetCoursesUseCaseResponse> {
         const courses = await this.courseRepository.getAllCourses();
         return { courses };

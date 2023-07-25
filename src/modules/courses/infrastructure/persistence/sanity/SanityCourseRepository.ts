@@ -1,6 +1,5 @@
 import CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
 import Course from '@modules/courses/domain/models/Course';
-import Tag from '@modules/courses/domain/models/Tag';
 import {SanityDocument} from '@sanity/client';
 import SanityRepository from '@modules/shared/infrastructure/persistence/sanity/SanityRepository';
 

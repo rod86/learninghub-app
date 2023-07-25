@@ -1,7 +1,7 @@
 import React from 'react';
-import {CourseFormat} from '@lib/models/Course';
-import Badge from '@components/common/Badge';
 import {GoDeviceCameraVideo, GoLink, GoFile} from 'react-icons/go';
+import Badge from '@components/common/Badge';
+import {CourseFormat} from '@modules/courses/domain/models/Course';
 
 type CourseFormatInfo = {
     [key in CourseFormat]: { label: string, color: string, icon: React.ElementType }

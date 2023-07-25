@@ -10,6 +10,7 @@ import {SelectFieldOption} from '@components/common/Form/SelectField';
 import GetCoursesUseCase from '@modules/courses/application/GetCoursesUseCase';
 import Course from '@modules/courses/domain/models/Course';
 import GetTagsUseCase from '@modules/courses/application/GetTagsUseCase';
+import {container} from 'tsyringe';
 
 interface CoursesFilterValues {
     search: string|null;
@@ -33,11 +34,11 @@ interface CoursesPageProps {
 }
 
 export const getStaticProps: GetStaticProps<CoursesPageProps> = async () => {
-    const useCase = new GetCoursesUseCase();
-    const { courses } = await useCase.handle();
+    const getCoursesUseCase = container.resolve(GetCoursesUseCase);
+    const { courses } = await getCoursesUseCase.handle();
 
-    const tagUseCase = new GetTagsUseCase();
-    const { tags } = await tagUseCase.handle();
+    const getTagsUseCase = container.resolve(GetTagsUseCase);
+    const { tags } = await getTagsUseCase.handle();
     const tagsOptions = tags.map(elem => ({value: elem.id, label: elem.name}));
 
     return { props: {
@@ -65,7 +66,7 @@ const CoursesPage = ({ courses, tagsOptions }: CoursesPageProps) => {
 
         const loadCourses = setTimeout(() => {
             setIsLoading(true);
-            const useCase = new GetCoursesUseCase();
+            const useCase = container.resolve(GetCoursesUseCase);
             useCase.handle()
                 .then(({ courses }) => setFilteredCourses(courses))
                 //.catch() do something with error

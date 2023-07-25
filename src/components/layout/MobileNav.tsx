@@ -7,7 +7,7 @@ interface MobileNavProps {
 }
 
 const MobileNav = ({isShown}: MobileNavProps) => {
-    const currentRoute = usePathname();
+    const currentRoute = usePathname() as string;
 
     return (
         <nav role="navigation" className={classNames('px-5 mb-10 lg:hidden', { 'hidden': !isShown })}>

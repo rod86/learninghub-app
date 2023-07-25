@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import {MAIN_MENU} from '@config/nav';
 
 const Navbar = () => {
-    const currentRoute = usePathname();
+    const currentRoute = usePathname() as string;
 
     return (
         <nav role="navigation" className="hidden lg:block">

@@ -8,13 +8,14 @@ import TimeDuration from '@components/common/TimeDuration';
 import GetCoursesUseCase from '@modules/courses/application/GetCoursesUseCase';
 import Course from '@modules/courses/domain/models/Course';
 import FindCourseBySlugUseCase from '@modules/courses/application/FindCourseBySlugUseCase';
+import {container} from 'tsyringe';
 
 interface CoursePageProps {
     course: Course;
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const handler = new GetCoursesUseCase();
+    const handler = container.resolve(GetCoursesUseCase);
     const { courses } = await handler.handle();
     const paths = courses.map(course => ({ params: { slug: course.slug }}));
     return {
@@ -26,7 +27,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const slug = params?.slug?.toString() as string;
-    const finder = new FindCourseBySlugUseCase();
+    const finder = container.resolve(FindCourseBySlugUseCase);
     const { course } = await finder.handle({ slug });
 
     return {
