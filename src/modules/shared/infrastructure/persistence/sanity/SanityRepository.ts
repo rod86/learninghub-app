@@ -1,19 +1,21 @@
-import {createClient, SanityClient} from '@sanity/client';
+import {SanityClient, SanityDocument} from '@sanity/client';
+import {Any} from '@sanity/client/src/types';
 
+type ModelDocument = Record<string, Any>;
 
-abstract class SanityRepository {
-    private readonly _client: SanityClient;
-    constructor() {
-        this._client = createClient({
-            projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-            dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-            useCdn: process.env.NEXT_PUBLIC_SANITY_USE_CDN,
-            apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION
-        });
+class SanityRepository {
+    constructor(
+        private readonly client: SanityClient
+    ) {}
+
+    public async fetch<T extends ModelDocument = ModelDocument>(query: string): Promise<T[]> {
+        const result: SanityDocument<T>[] = await this.client.fetch(query);
+        return result as T[];
     }
 
-    protected get client(): SanityClient {
-        return this._client;
+    public async fetchOne<T extends ModelDocument = ModelDocument>(query: string): Promise<T|null> {
+        const result = await this.fetch<T>(query);
+        return result.shift() as T || null;
     }
 }
 

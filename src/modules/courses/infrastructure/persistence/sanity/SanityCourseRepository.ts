@@ -1,9 +1,14 @@
 import CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
 import Course from '@modules/courses/domain/models/Course';
-import {SanityDocument} from '@sanity/client';
+import {inject, injectable} from 'tsyringe';
 import SanityRepository from '@modules/shared/infrastructure/persistence/sanity/SanityRepository';
 
-class SanityCourseRepository extends SanityRepository implements CourseRepositoryInterface {
+@injectable()
+class SanityCourseRepository implements CourseRepositoryInterface {
+
+    constructor(
+        @inject('SanityRepository') private readonly repository: SanityRepository
+    ) {}
 
     public async getAllCourses(): Promise<Course[]> {
         const query = `*[_type == "course"] {
@@ -20,8 +25,7 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
             "tags": tags[]->{"id":_id,"slug":slug.current,name}
         }`;
 
-        const result: SanityDocument<Course>[] = await this.client.fetch(query);
-        return result as Course[];
+        return await this.repository.fetch<Course>(query);
     }
 
     async findCourseBySlug(slug: string): Promise<Course|null> {
@@ -38,14 +42,8 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
             url,
             "tags": tags[]->{"id":_id,"slug":slug.current,name}
         }`;
-        const result: SanityDocument<Course>[] = await this.client.fetch(query);
-        const row = result.shift() as Course || null;
 
-        if (!row) {
-            return null;
-        }
-
-        return row;
+        return this.repository.fetchOne<Course>(query);
     }
 }
 
