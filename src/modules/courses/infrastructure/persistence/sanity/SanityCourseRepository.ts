@@ -2,7 +2,6 @@ import CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryI
 import Course from '@modules/courses/domain/models/Course';
 import {injectable} from 'tsyringe';
 import SanityRepository from '@modules/shared/infrastructure/persistence/sanity/SanityRepository';
-import {SanityDocument} from '@sanity/client';
 
 @injectable()
 class SanityCourseRepository extends SanityRepository implements CourseRepositoryInterface {
