@@ -1,14 +1,10 @@
 import TagRepositoryInterface from '@modules/courses/domain/TagRepositoryInterface';
 import Tag from '@modules/courses/domain/models/Tag';
-import {inject, injectable} from 'tsyringe';
+import {injectable} from 'tsyringe';
 import SanityRepository from '@modules/shared/infrastructure/persistence/sanity/SanityRepository';
 
 @injectable()
-class SanityTagRepository implements TagRepositoryInterface {
-
-    constructor(
-        @inject('SanityRepository') private readonly repository: SanityRepository
-    ) {}
+class SanityTagRepository extends SanityRepository implements TagRepositoryInterface {
 
     async getTags(): Promise<Tag[]> {
         const query = `*[_type=="tag"] {
@@ -17,7 +13,7 @@ class SanityTagRepository implements TagRepositoryInterface {
             name  
         }`;
 
-        return this.repository.fetch<Tag>(query);
+        return await this.client.fetch<Tag[]>(query);
     }
 }
 
