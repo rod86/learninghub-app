@@ -1,14 +1,14 @@
-import {UseCase,Response,Query} from '@modules/shared/domain/UseCase';
+import {UseCase} from '@modules/shared/domain/UseCase';
 import Course from '@modules/courses/domain/models/Course';
 import type CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
 import CourseNotFoundError from '@modules/courses/domain/errors/CourseNotFoundError';
 import {inject, injectable} from 'tsyringe';
 
-interface FindCourseBySlugUseCaseQuery extends Query {
+interface FindCourseBySlugUseCaseQuery{
     slug: string;
 }
 
-interface FindCourseBySlugUseCaseResponse extends Response {
+interface FindCourseBySlugUseCaseResponse {
     course: Course;
 }
 
