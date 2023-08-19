@@ -1,7 +1,8 @@
 import {usePathname} from 'next/navigation';
 import Link from 'next/link';
 import classNames from 'classnames';
-import {MAIN_MENU} from '@config/nav';
+import {MAIN_MENU} from '@helpers/navigation';
+
 interface MobileNavProps {
     isShown: boolean;
 }

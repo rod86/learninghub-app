@@ -5,20 +5,12 @@ import CheckboxFieldGroup from '@components/common/Form/CheckboxFieldGroup';
 import Field from '@components/common/Form/Field';
 import Button from '@components/common/Form/Button';
 import {GoX} from 'react-icons/go';
-
-// TODO move to domain
-export interface CoursesFilterValues {
-    search: string|null;
-    tag: number|null;
-    format: string[];
-    duration: string[];
-    level: string[];
-}
+import { Courses, COURSE_DURATION_OPTIONS, COURSE_FORMAT_OPTIONS, COURSE_LEVEL_OPTIONS } from '@helpers/courses';
 
 interface CoursesListFilterProps {
-    filterValues: CoursesFilterValues;
+    filterValues: Courses;
     className?: string;
-    onChange: (filterValues: CoursesFilterValues) => void;
+    onChange: (filterValues: Courses) => void;
     onClear: () => void;
     tagsOptions: SelectFieldOption[]
 }
@@ -67,34 +59,21 @@ const CoursesListFilter = ({ filterValues, className, tagsOptions, onChange, onC
             <Field label="Format" asDiv>
                 <CheckboxFieldGroup
                     name="format"
-                    options={[
-                        {value: 'web', label: 'Web\\Blog'},
-                        {value: 'video', label: 'Video'},
-                        {value: 'pdf', label: 'Pdf'},
-                    ]}
+                    options={COURSE_FORMAT_OPTIONS}
                     checkedValues={filterValues.format}
                     onChange={onChangeCheckboxGroup} />
             </Field>
             <Field label="Duration" asDiv>
                 <CheckboxFieldGroup
                     name="duration"
-                    options={[
-                        {value:'1_hour_or_less', label: '1 hour or less'},
-                        {value:'1_3_hours', label: '1 - 3 hours'},
-                        {value:'3_6_hours', label: '3 - 6 hours'},
-                        {value:'6_hours_or_more', label: '6 hours or more'},
-                    ]}
+                    options={COURSE_DURATION_OPTIONS}
                     checkedValues={filterValues.duration}
                     onChange={onChangeCheckboxGroup} />
             </Field>
             <Field label="Level" asDiv>
                 <CheckboxFieldGroup
                     name="level"
-                    options={[
-                        {value: 'beginner', label: 'Beginner'},
-                        {value: 'intermediate', label: 'Intermediate'},
-                        {value: 'advanced', label: 'Advanced'},
-                    ]}
+                    options={COURSE_LEVEL_OPTIONS}
                     checkedValues={filterValues.level}
                     onChange={onChangeCheckboxGroup} />
             </Field>

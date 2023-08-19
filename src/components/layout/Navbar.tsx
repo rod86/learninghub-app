@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import classnames from 'classnames';
-import {MAIN_MENU} from '@config/nav';
+import {MAIN_MENU} from '@helpers/navigation';
 
 const Navbar = () => {
     const currentRoute = usePathname() as string;

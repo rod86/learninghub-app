@@ -7,26 +7,8 @@ import {GoFilter} from 'react-icons/go';
 import classNames from 'classnames';
 import {GetStaticProps} from 'next';
 import {SelectFieldOption} from '@components/common/Form/SelectField';
-import GetCoursesUseCase from '@modules/courses/application/GetCoursesUseCase';
 import Course from '@modules/courses/domain/models/Course';
-import GetTagsUseCase from '@modules/courses/application/GetTagsUseCase';
-import {container} from 'tsyringe';
-
-interface CoursesFilterValues {
-    search: string|null;
-    tag: number|null;
-    format: string[];
-    duration: string[];
-    level: string[];
-}
-
-const initialFilterValues = {
-    search: null,
-    tag: null,
-    format: [],
-    duration: [],
-    level: []
-};
+import {DEFAULT_FILTER_VALUES, Courses, searchCourses, getTagsOptions} from '@helpers/courses';
 
 interface CoursesPageProps {
     courses: Course[];
@@ -34,12 +16,8 @@ interface CoursesPageProps {
 }
 
 export const getStaticProps: GetStaticProps<CoursesPageProps> = async () => {
-    const getCoursesUseCase = container.resolve(GetCoursesUseCase);
-    const { courses } = await getCoursesUseCase.handle();
-
-    const getTagsUseCase = container.resolve(GetTagsUseCase);
-    const { tags } = await getTagsUseCase.handle();
-    const tagsOptions = tags.map(elem => ({value: elem.id, label: elem.name}));
+    const courses = await searchCourses(DEFAULT_FILTER_VALUES);
+    const tagsOptions = await getTagsOptions();
 
     return { props: {
         courses,
@@ -50,11 +28,11 @@ export const getStaticProps: GetStaticProps<CoursesPageProps> = async () => {
 const CoursesPage = ({ courses, tagsOptions }: CoursesPageProps) => {
     const initialRender = useRef(true);
     const [filteredCourses, setFilteredCourses] = useState<Course[]>(courses);
-    const [filterValues, setFilterValues] = useState<CoursesFilterValues>(initialFilterValues);
+    const [filterValues, setFilterValues] = useState<Courses>(DEFAULT_FILTER_VALUES);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showFilters, setShowFilters] = useState<boolean>(false);
 
-    const onChangeFilter = (values: CoursesFilterValues): void => {
+    const onChangeFilter = (values: Courses): void => {
         initialRender.current = false;
         setFilterValues(values);
     };
@@ -66,9 +44,8 @@ const CoursesPage = ({ courses, tagsOptions }: CoursesPageProps) => {
 
         const loadCourses = setTimeout(() => {
             setIsLoading(true);
-            const useCase = container.resolve(GetCoursesUseCase);
-            useCase.handle()
-                .then(({ courses }) => setFilteredCourses(courses))
+            searchCourses(filterValues)
+                .then((courses) => setFilteredCourses(courses))
                 //.catch() do something with error
                 .finally(() => setIsLoading(false));
         }, 500);
@@ -94,7 +71,7 @@ const CoursesPage = ({ courses, tagsOptions }: CoursesPageProps) => {
                         tagsOptions={tagsOptions}
                         filterValues={filterValues}
                         onChange={onChangeFilter}
-                        onClear={() => onChangeFilter(initialFilterValues)} />
+                        onClear={() => onChangeFilter(DEFAULT_FILTER_VALUES)} />
                 </div>
                 <div className="w-full lg:pl-5">
                     {isLoading && <Spinner />}
