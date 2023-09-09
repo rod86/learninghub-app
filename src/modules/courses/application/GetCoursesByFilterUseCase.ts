@@ -2,13 +2,16 @@ import {UseCase} from '@modules/shared/domain/UseCase';
 import Course from '@modules/courses/domain/models/Course';
 import {inject, injectable} from 'tsyringe';
 import type CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
+import {CourseFilterCriteria} from '@modules/courses/domain/CourseFilterCriteria';
 
 interface GetCoursesByFilterUseCaseQuery {
     search: string|null;
     tags: string[];
     format: string[];
 
-    duration: string[];
+    minDuration: number|null;
+
+    maxDuration: number|null;
 
     level: string[];
 }
@@ -26,7 +29,7 @@ class GetCoursesByFilterUseCase implements UseCase<GetCoursesByFilterUseCaseQuer
 
     async handle(query: GetCoursesByFilterUseCaseQuery): Promise<GetCoursesByFilterUseCaseResponse> {
 
-        const criteria: { [key: string]: any } = {};
+        const criteria: CourseFilterCriteria = {};
 
         if (query.search) {
             criteria['search'] = query.search;
@@ -36,9 +39,12 @@ class GetCoursesByFilterUseCase implements UseCase<GetCoursesByFilterUseCaseQuer
             criteria['tags'] = query.tags;
         }
 
-        if (query.duration.length) {
-            criteria['durationMin'] = query.duration + '_min';
-            criteria['durationMax'] = query.duration + '_max';
+        if (query.minDuration) {
+            criteria['minDuration'] = query.minDuration;
+        }
+
+        if (query.maxDuration) {
+            criteria['maxDuration'] = query.maxDuration;
         }
 
         if (query.format.length) {
@@ -46,10 +52,12 @@ class GetCoursesByFilterUseCase implements UseCase<GetCoursesByFilterUseCaseQuer
         }
 
         if (query.level.length) {
-            criteria['level'] = query.format;
+            criteria['level'] = query.level;
         }
 
-        return { courses: [] };
+        const courses = await this.courseRepository.findCoursesByCriteria(criteria);
+
+        return { courses };
     }
 }
 

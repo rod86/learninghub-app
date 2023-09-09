@@ -5,7 +5,7 @@ import CheckboxFieldGroup from '@components/common/Form/CheckboxFieldGroup';
 import Field from '@components/common/Form/Field';
 import Button from '@components/common/Form/Button';
 import {GoX} from 'react-icons/go';
-import { Courses, COURSE_DURATION_OPTIONS, COURSE_FORMAT_OPTIONS, COURSE_LEVEL_OPTIONS } from '@helpers/courses';
+import { Courses, getDurationOptions, COURSE_FORMAT_OPTIONS, COURSE_LEVEL_OPTIONS } from '@helpers/courses';
 
 interface CoursesListFilterProps {
     filterValues: Courses;
@@ -64,11 +64,11 @@ const CoursesListFilter = ({ filterValues, className, tagsOptions, onChange, onC
                     onChange={onChangeCheckboxGroup} />
             </Field>
             <Field label="Duration" asDiv>
-                <CheckboxFieldGroup
+                <SelectField
                     name="duration"
-                    options={COURSE_DURATION_OPTIONS}
-                    checkedValues={filterValues.duration}
-                    onChange={onChangeCheckboxGroup} />
+                    options={[{ value: '', label: '-'}, ...getDurationOptions()]}
+                    value={filterValues.duration}
+                    onChange={onChangeFilter} />
             </Field>
             <Field label="Level" asDiv>
                 <CheckboxFieldGroup

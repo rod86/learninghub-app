@@ -3,11 +3,44 @@ import GetCoursesByFilterUseCase from '@modules/courses/application/GetCoursesBy
 import Course from '@modules/courses/domain/models/Course';
 import GetTagsUseCase from '@modules/courses/application/GetTagsUseCase';
 
-export const COURSE_DURATION_OPTIONS = [
-    {value:'1_hour_or_less', label: '1 hour or less'},
-    {value:'1_3_hours', label: '1 - 3 hours'},
-    {value:'3_6_hours', label: '3 - 6 hours'},
-    {value:'6_hours_or_more', label: '6 hours or more'},
+export interface Courses {
+    search: string|null;
+    tag: string|null;
+    format: string[];
+    duration: string|null;
+    level: string[];
+}
+
+interface CourseDuration {
+    id: string;
+    title: string;
+    minDuration?: number;
+    maxDuration?: number;
+}
+
+export const COURSE_DURATION: CourseDuration[] = [
+    {
+        id:'1_hour_or_less',
+        title: '1 hour or less',
+        maxDuration: 60,
+    },
+    {
+        id:'1_3_hours',
+        title: '1 - 3 hours',
+        minDuration: 60,
+        maxDuration: 180,
+    },
+    {
+        id:'3_6_hours',
+        title: '3 - 6 hours',
+        minDuration: 180,
+        maxDuration: 360,
+    },
+    {
+        id:'6_hours_or_more',
+        title: '6 hours or more',
+        minDuration: 360,
+    },
 ];
 
 export const COURSE_FORMAT_OPTIONS = [
@@ -22,23 +55,20 @@ export const COURSE_LEVEL_OPTIONS = [
     {value: 'advanced', label: 'Advanced'},
 ];
 
-export interface Courses {
-    search: string|null;
-    tag: string|null;
-    format: string[];
-    duration: string[];
-    level: string[];
-}
-
 export const DEFAULT_FILTER_VALUES: Courses = {
     search: null,
     tag: null,
     format: [],
-    duration: [],
+    duration: null,
     level: []
 };
 
 export async function searchCourses(values: Courses): Promise<Course[]> {
+
+    const { minDuration, maxDuration } = values.duration
+        ? getDurationTimeRange(values.duration)
+        : { minDuration: null, maxDuration: null};
+
     const tags = values.tag ? [values.tag] : [];
 
     const handler = container.resolve<GetCoursesByFilterUseCase>(GetCoursesByFilterUseCase);
@@ -46,7 +76,8 @@ export async function searchCourses(values: Courses): Promise<Course[]> {
         search: values.search,
         tags,
         format: values.format,
-        duration: values.duration,
+        minDuration,
+        maxDuration,
         level: values.level
     });
 
@@ -56,5 +87,28 @@ export async function searchCourses(values: Courses): Promise<Course[]> {
 export async function getTagsOptions(): Promise<{ value: string, label: string}[]> {
     const getTagsUseCase = container.resolve(GetTagsUseCase);
     const { tags } = await getTagsUseCase.handle();
-    return tags.map(elem => ({value: elem.id, label: elem.name}));
+    return tags.map(elem => ({
+        value: elem.id,
+        label: elem.name
+    }));
+}
+
+export function getDurationOptions(): { value: string, label: string}[] {
+    return COURSE_DURATION.map(elem => ({
+        value: elem.id,
+        label: elem.title
+    }));
+}
+
+function getDurationTimeRange(id: string): {minDuration: number|null, maxDuration: number|null} {
+    const duration = COURSE_DURATION.find(elem => elem.id === id);
+
+    if (!duration) {
+        throw new Error(`Duration option with id ${id} not found`);
+    }
+
+    return {
+        minDuration: duration.minDuration ?? null,
+        maxDuration: duration.maxDuration ?? null,
+    };
 }
