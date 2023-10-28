@@ -1,16 +1,11 @@
 import Course from '@modules/courses/domain/models/Course';
-import {CourseFilterCriteria} from '@modules/courses/domain/CourseFilterCriteria';
+import {CourseFilter} from '@modules/courses/domain/CourseFilter';
+import {FindByFilter} from '@modules/shared/domain/Filter';
 
 interface CourseRepositoryInterface {
     getAllCourses(): Promise<Course[]>;
-
-    findCoursesByCriteria(
-        criteria: CourseFilterCriteria,
-        orderColumn?: string,
-        orderDirection?: 'asc' | 'desc',
-        offset?: number,
-        limit?: number
-    ): Promise<Course[]>;
+    
+    findByFilter: FindByFilter<CourseFilter, Course[]>;
 
     findCourseBySlug(slug: string): Promise<Course|null>;
 }

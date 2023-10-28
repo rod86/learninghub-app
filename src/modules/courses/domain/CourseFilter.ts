@@ -1,5 +1,5 @@
 
-export interface CourseFilterCriteria {
+export interface CourseFilter {
     search?: string;
     tags?: string[];
     format?: string[];

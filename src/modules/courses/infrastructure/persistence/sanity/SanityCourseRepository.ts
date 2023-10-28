@@ -2,7 +2,8 @@ import CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryI
 import Course from '@modules/courses/domain/models/Course';
 import {injectable} from 'tsyringe';
 import SanityRepository from '@modules/shared/infrastructure/persistence/sanity/SanityRepository';
-import {CourseFilterCriteria} from '@modules/courses/domain/CourseFilterCriteria';
+import {CourseFilter} from '@modules/courses/domain/CourseFilter';
+import {Filter, FilterResult} from '@modules/shared/domain/Filter';
 
 @injectable()
 class SanityCourseRepository extends SanityRepository implements CourseRepositoryInterface {
@@ -26,7 +27,7 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
     }
 
     async findCourseBySlug(slug: string): Promise<Course|null> {
-        const query = `*[_type == "course" && slug.current == "${slug}"] {
+        const query = `*[_type == "course" && slug.current == "${slug}"][0] {
             "id": _id,
             title,  
             "slug": slug.current,
@@ -40,17 +41,18 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
             "tags": tags[]->{"id":_id,"slug":slug.current,name}
         }`;
 
-        const result = await this.client.fetch<Course[]>(query);
-        return result.shift() as Course || null;
+        const result = await this.client.fetch<Course>(query);
+        return result as Course || null;
     }
 
-    async findCoursesByCriteria(
-        criteria: CourseFilterCriteria,
-        orderColumn?: string,
-        orderDirection?: 'asc' | 'desc',
-        offset?: number,
-        limit?: number
-    ): Promise<Course[]> {
+    async findByFilter(options: Filter<CourseFilter>): Promise<FilterResult<Course[]>> {
+        const {
+            filters,
+            orderColumn,
+            orderDirection,
+            limit,
+            offset
+        } = options;
 
         const where = [
             '_type == "course"'
@@ -60,56 +62,60 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
 
         const joinValues = (values: string[]) => `"${values.join('","')}"`;
 
-        if (criteria.search) {
-            where.push(`title match "${criteria.search}"`);
+        // Build where clause
+        if (filters.search) {
+            where.push(`title match "${filters.search}"`);
         }
 
-        if (criteria.tags?.length) {
-            where.push(`count((tags[]->_id)[@ in [${joinValues(criteria.tags)}]]) > 0`);
+        if (filters.tags?.length) {
+            where.push(`count((tags[]->_id)[@ in [${joinValues(filters.tags)}]]) > 0`);
         }
 
-        if (criteria.minDuration) {
-            where.push(`durationMinutes >= ${criteria.minDuration}`);
+        if (filters.minDuration) {
+            where.push(`durationMinutes >= ${filters.minDuration}`);
         }
 
-        if (criteria.maxDuration) {
-            where.push(`durationMinutes < ${criteria.maxDuration}`);
+        if (filters.maxDuration) {
+            where.push(`durationMinutes < ${filters.maxDuration}`);
         }
 
-        if (criteria.format?.length) {
-            where.push(`format in [${joinValues(criteria.format)}]`);
+        if (filters.format?.length) {
+            where.push(`format in [${joinValues(filters.format)}]`);
         }
 
-        if (criteria.level?.length) {
-            where.push(`level in [${joinValues(criteria.level)}]`);
+        if (filters.level?.length) {
+            where.push(`level in [${joinValues(filters.level)}]`);
         }
 
-        if (offset || limit) {
-            offset = offset ?? 0;
-            limit = limit ?? 20;
-
-            limitClause = `[${offset}..${limit}]`;
+        // Build limit clause
+        if (limit || offset) {
+            limitClause = `[${offset ?? 0}...${limit ?? 20}]`;
         }
 
+        // Build order clause
         if (orderColumn) {
             orderClause = `|order(${orderColumn} ${orderDirection ?? 'desc'})`;
         }
 
-        const query = `*[${where.join(' && ')}]${orderClause}${limitClause} {
-            "id": _id,
-            title,  
-            "slug": slug.current,
-            format,
-            level,
-            durationMinutes,
-            publishedAt,
-            description,
-            isFree,
-            url,
-            "tags": tags[]->{"id":_id,"slug":slug.current,name}
+        // Run query
+        const query = `{
+            "total": count(*[${where.join(' && ')}]),
+            "items": *[${where.join(' && ')}]${orderClause}${limitClause} {
+                "id": _id,
+                title,  
+                "slug": slug.current,
+                format,
+                level,
+                durationMinutes,
+                publishedAt,
+                description,
+                isFree,
+                url,
+                "tags": tags[]->{"id":_id,"slug":slug.current,name}
+            }
         }`;
 
-        return await this.client.fetch<Course[]>(query);
+        return await this.client.fetch<FilterResult<Course[]>>(query);
     }
 }
 

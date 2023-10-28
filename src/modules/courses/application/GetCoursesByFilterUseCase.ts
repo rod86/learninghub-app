@@ -2,7 +2,8 @@ import {UseCase} from '@modules/shared/domain/UseCase';
 import Course from '@modules/courses/domain/models/Course';
 import {inject, injectable} from 'tsyringe';
 import type CourseRepositoryInterface from '@modules/courses/domain/CourseRepositoryInterface';
-import {CourseFilterCriteria} from '@modules/courses/domain/CourseFilterCriteria';
+import {CourseFilter} from '@modules/courses/domain/CourseFilter';
+import {OrderByDirection} from '@modules/shared/domain/Filter';
 
 interface GetCoursesByFilterUseCaseQuery {
     search?: string|null;
@@ -12,7 +13,7 @@ interface GetCoursesByFilterUseCaseQuery {
     maxDuration?: number|null;
     level?: string[];
     orderColumn?: string;
-    orderDirection?: 'asc' | 'desc';
+    orderDirection?: OrderByDirection;
     offset?: number;
     limit?: number;
 }
@@ -30,41 +31,41 @@ class GetCoursesByFilterUseCase implements UseCase<GetCoursesByFilterUseCaseQuer
 
     async handle(query: GetCoursesByFilterUseCaseQuery): Promise<GetCoursesByFilterUseCaseResponse> {
 
-        const criteria: CourseFilterCriteria = {};
+        const filters: CourseFilter = {};
 
         if (query.search) {
-            criteria['search'] = query.search;
+            filters['search'] = query.search;
         }
 
         if (query.tags) {
-            criteria['tags'] = query.tags;
+            filters['tags'] = query.tags;
         }
 
         if (query.minDuration) {
-            criteria['minDuration'] = query.minDuration;
+            filters['minDuration'] = query.minDuration;
         }
 
         if (query.maxDuration) {
-            criteria['maxDuration'] = query.maxDuration;
+            filters['maxDuration'] = query.maxDuration;
         }
 
         if (query.format) {
-            criteria['format'] = query.format;
+            filters['format'] = query.format;
         }
 
         if (query.level) {
-            criteria['level'] = query.level;
+            filters['level'] = query.level;
         }
 
-        const courses = await this.courseRepository.findCoursesByCriteria(
-            criteria,
-            query.orderColumn,
-            query.orderDirection,
-            query.offset,
-            query.limit
-        );
+        const result = await this.courseRepository.findByFilter({
+            filters,
+            orderColumn: query.orderColumn,
+            orderDirection: query.orderDirection,
+            offset: query.offset,
+            limit: query.limit
+        });
 
-        return { courses };
+        return { courses: result.items };
     }
 }
 
