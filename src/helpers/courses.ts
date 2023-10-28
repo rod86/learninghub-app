@@ -63,7 +63,13 @@ export const DEFAULT_FILTER_VALUES: Courses = {
     level: []
 };
 
-export async function searchCourses(values: Courses): Promise<Course[]> {
+export async function searchCourses(
+    values: Courses,
+    orderColumn?: string,
+    orderDirection?: 'asc' | 'desc',
+    offset?: number,
+    limit?: number
+): Promise<Course[]> {
 
     const { minDuration, maxDuration } = values.duration
         ? getDurationTimeRange(values.duration)
@@ -78,7 +84,11 @@ export async function searchCourses(values: Courses): Promise<Course[]> {
         format: values.format,
         minDuration,
         maxDuration,
-        level: values.level
+        level: values.level,
+        orderColumn,
+        orderDirection,
+        offset,
+        limit
     });
 
     return courses;

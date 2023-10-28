@@ -5,15 +5,16 @@ import type CourseRepositoryInterface from '@modules/courses/domain/CourseReposi
 import {CourseFilterCriteria} from '@modules/courses/domain/CourseFilterCriteria';
 
 interface GetCoursesByFilterUseCaseQuery {
-    search: string|null;
-    tags: string[];
-    format: string[];
-
-    minDuration: number|null;
-
-    maxDuration: number|null;
-
-    level: string[];
+    search?: string|null;
+    tags?: string[];
+    format?: string[];
+    minDuration?: number|null;
+    maxDuration?: number|null;
+    level?: string[];
+    orderColumn?: string;
+    orderDirection?: 'asc' | 'desc';
+    offset?: number;
+    limit?: number;
 }
 
 interface GetCoursesByFilterUseCaseResponse {
@@ -35,7 +36,7 @@ class GetCoursesByFilterUseCase implements UseCase<GetCoursesByFilterUseCaseQuer
             criteria['search'] = query.search;
         }
 
-        if (query.tags.length) {
+        if (query.tags) {
             criteria['tags'] = query.tags;
         }
 
@@ -47,15 +48,21 @@ class GetCoursesByFilterUseCase implements UseCase<GetCoursesByFilterUseCaseQuer
             criteria['maxDuration'] = query.maxDuration;
         }
 
-        if (query.format.length) {
+        if (query.format) {
             criteria['format'] = query.format;
         }
 
-        if (query.level.length) {
+        if (query.level) {
             criteria['level'] = query.level;
         }
 
-        const courses = await this.courseRepository.findCoursesByCriteria(criteria);
+        const courses = await this.courseRepository.findCoursesByCriteria(
+            criteria,
+            query.orderColumn,
+            query.orderDirection,
+            query.offset,
+            query.limit
+        );
 
         return { courses };
     }

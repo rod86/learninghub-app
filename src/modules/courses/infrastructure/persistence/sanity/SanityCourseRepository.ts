@@ -44,11 +44,19 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
         return result.shift() as Course || null;
     }
 
-    async findCoursesByCriteria(criteria: CourseFilterCriteria): Promise<Course[]> {
+    async findCoursesByCriteria(
+        criteria: CourseFilterCriteria,
+        orderColumn?: string,
+        orderDirection?: 'asc' | 'desc',
+        offset?: number,
+        limit?: number
+    ): Promise<Course[]> {
 
         const where = [
             '_type == "course"'
         ];
+        let orderClause = '',
+            limitClause = '';
 
         const joinValues = (values: string[]) => `"${values.join('","')}"`;
 
@@ -56,8 +64,8 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
             where.push(`title match "${criteria.search}"`);
         }
 
-        if (criteria.tags) {
-            where.push(`count((tags[]->_id)[@ in [${joinValues(criteria.tags)}]]) > 0`)
+        if (criteria.tags?.length) {
+            where.push(`count((tags[]->_id)[@ in [${joinValues(criteria.tags)}]]) > 0`);
         }
 
         if (criteria.minDuration) {
@@ -68,15 +76,26 @@ class SanityCourseRepository extends SanityRepository implements CourseRepositor
             where.push(`durationMinutes < ${criteria.maxDuration}`);
         }
 
-        if (criteria.format) {
+        if (criteria.format?.length) {
             where.push(`format in [${joinValues(criteria.format)}]`);
         }
 
-        if (criteria.level) {
+        if (criteria.level?.length) {
             where.push(`level in [${joinValues(criteria.level)}]`);
         }
 
-        const query = `*[${where.join(' && ')}] {
+        if (offset || limit) {
+            offset = offset ?? 0;
+            limit = limit ?? 20;
+
+            limitClause = `[${offset}..${limit}]`;
+        }
+
+        if (orderColumn) {
+            orderClause = `|order(${orderColumn} ${orderDirection ?? 'desc'})`;
+        }
+
+        const query = `*[${where.join(' && ')}]${orderClause}${limitClause} {
             "id": _id,
             title,  
             "slug": slug.current,
