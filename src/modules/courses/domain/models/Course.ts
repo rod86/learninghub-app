@@ -1,4 +1,5 @@
 import Tag from '@modules/courses/domain/models/Tag';
+import {PortableTextBlock} from '@portabletext/types';
 
 export type CourseFormat = 'web' | 'video' | 'pdf';
 
@@ -15,6 +16,7 @@ export type Level = 'beginner' | 'intermediate' | 'advanced';
     url: string;
     isFree: boolean;
     publishedAt: string;
+    description?: PortableTextBlock[];
 }
 
 export default Course;

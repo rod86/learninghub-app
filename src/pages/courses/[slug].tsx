@@ -9,6 +9,7 @@ import GetCoursesUseCase from '@modules/courses/application/GetCoursesUseCase';
 import Course from '@modules/courses/domain/models/Course';
 import FindCourseBySlugUseCase from '@modules/courses/application/FindCourseBySlugUseCase';
 import {container} from 'tsyringe';
+import ContentBlock from '@components/common/ContentBlock';
 
 interface CoursePageProps {
     course: Course;
@@ -57,9 +58,9 @@ function CoursePage({ course }: CoursePageProps) {
             <div className="flex-row items-start space-x-4 mb-10">
                 {course.tags.map(item => <CourseTag key={item.id} label={item.name} isLarge />)}
             </div>
-            <p className="mb-10">
-                [desc here]
-            </p>
+            <div className="mb-10">
+                {course.description && <ContentBlock content={course.description} />}
+            </div>
             <div className="lg:text-center">
                 <a href={course.url}
                     target="_blank"
